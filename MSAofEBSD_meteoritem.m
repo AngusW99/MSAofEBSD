@@ -15,7 +15,7 @@ t1=clock;
 
 % small ferritic steel sample - from Merlin- from DMC
 BaseFolder='F:\Ben\';
-HDF5_filename='Demo_Ben.h5';
+HDF5_filename='IronMeteorite_Gibeon_ArgusOptimisationPaper_Map1.h5';
 NumPCA=10;  % user input of number of basis patterns
 
 %%
@@ -66,6 +66,10 @@ subplot(1,2,1); imagesc(Image);axis image off;colormap('gray'); title('SEM Image
 subplot(1,2,2); imagesc(transpose(reshape(MapData.RadonQuality,MapSize2,MapSize1)));axis image off;colormap('gray'); title('IQ');
 
 
+%% Read the EDX spectra
+channum=2048;
+pattern_number=1;
+[EDSData_cor,EDSData_raw ] = bReadEDX(EBSPData,pattern_number,channum);
 
 %% Read in pattern data, correct, reshape
 

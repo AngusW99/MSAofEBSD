@@ -48,6 +48,10 @@ MicroscopeData.CoordSystems='TRZP'; %Top Right Z Plus - standard for Bruker Coor
 %set up the EBSP reader
 
 EBSP.PatternFile=[HDF5_info.Groups.Name    '/EBSD/Data/RawPatterns'];
+
+EBSP.EDXRaw=[HDF5_info.Groups.Name    '/EDX1/Data/Counts Raw'];
+EBSP.EDXCor=[HDF5_info.Groups.Name    '/EDX1/Data/Counts Corrected'];
+
 EBSP.PW=double(MicroscopeData.PatternWidth);
 EBSP.PH=double(MicroscopeData.PatternHeight);
 EBSP.HDF5_loc=InputUser.HDF5FullFile;
