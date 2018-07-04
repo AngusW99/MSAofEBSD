@@ -67,10 +67,73 @@ subplot(1,2,2); imagesc(transpose(reshape(MapData.RadonQuality,MapSize2,MapSize1
 
 
 %% Read the EDX spectra
+Data_x=Data_InputMap.xpts; %crop to a small square
+Data_y=Data_InputMap.ypts;
+
 channum=2048;
 pattern_number=1;
 [EDSData_cor,EDSData_raw ] = bReadEDX(EBSPData,pattern_number,channum);
 
+EDSData_cor_map=zeros(Data_y,Data_x,channum);
+EDSData_raw_map=zeros(Data_y,Data_x,channum);
+
+Mean_cor=zeros(Data_y,Data_x);
+Mean_raw=zeros(Data_y,Data_x);
+
+for xi=1:Data_x
+    parfor yi=1:Data_y
+        [EDSData_cor_map(yi,xi,:),EDSData_raw_map(yi,xi,:) ] = bReadEDX(EBSPData,Data_InputMap.PMap(yi,xi),channum);
+        Mean_cor(yi,xi)=mean(EDSData_cor_map(yi,xi,:));
+        Mean_raw(yi,xi)=mean(EDSData_raw_map(yi,xi,:));
+    end
+end
+
+%reshape the array
+EDSData_cor_map2=permute(EDSData_cor_map,[3,1,2]);
+EDSData_cor_map2=reshape(EDSData_cor_map2(1:2048/2,:,:),[2048/2,size(EDSData_cor_map2,2)*size(EDSData_cor_map2,3)]);
+
+%% do PCA on the EDS
+NumPCAe=3;
+[coeffe,scoree,latente,~,explainede]=pca(EDSData_cor_map2, 'Centered',false, 'NumComponents',NumPCAe);
+
+%% rotate factors
+[coeffVMe, RotVMe] = rotatefactors(coeffe(:,1:NumPCAe),'Method','varimax', 'Maxit', 5000, 'Reltol', 0.5*sqrt(eps));
+scoreVMe=scoree(:,1:NumPCAe)*RotVMe;
+%coeff = maps
+%scores = patterns
+
+%%
+figure;
+for n=1:3
+subplot(2,3,n);
+iqr_1=iqr(coeffVMe(:,n));
+med_1=median(coeffVMe(:,n));
+crange=med_1+[-iqr_1/2 iqr_1/2];
+imagesc(reshape(coeffVMe(:,n),[size(EDSData_cor_map,1),size(EDSData_cor_map,2)])); axis image; caxis(crange);
+xlim([400 500]);
+ylim([350 450]);
+
+subplot(2,3,n+3);
+plot(scoree(:,n));
+xlim([0 2048/2]);
+end
+
+figure;
+for n=1:3
+subplot(2,3,n);
+iqr_1=iqr(coeffe(:,n));
+med_1=median(coeffe(:,n));
+crange=med_1+[-iqr_1/2 iqr_1/2];
+imagesc(reshape(coeffe(:,n),[size(EDSData_cor_map,1),size(EDSData_cor_map,2)])); axis image; caxis(crange);
+xlim([400 500]);
+ylim([350 450]);
+
+subplot(2,3,n+3);
+plot(scoreVMe(:,n));
+xlim([0 2048/2]);
+end
+% EDS_area=reshape(EDSData_cor_map(:,:,1:(2048/2)),
+%need to reshape & PCA
 %% Read in pattern data, correct, reshape
 
 %load the first pattern to set up an array of patterns
