@@ -16,9 +16,11 @@ t1=clock;
 % small ferritic steel sample - from Merlin- from DMC
 BaseFolder='F:\Ben\';
 HDF5_filename='Demo_Ben.h5';
-NumPCA=20; %number of factors to use
-PCAGrid=[4 5]; %grid for plotting
+NumPCA=36; %number of factors to use
+PCAGrid=[6 6]; %grid for plotting
 
+PCA_radon=0; %do a PCA on the Radon
+plot_pca=1; %plot the PCA
 
 %%
 %background correction
@@ -127,7 +129,7 @@ testArray2=(testArray2-repmat(testmean,[size(testArray2,1),1]))./repmat(teststd,
 %coeff = maps
 %scores = patterns
 
-if PCA_radon == 1 
+if PCA_radon == 1
     pTime('PCA Radon',t1);
     testRadon2=reshape(testRadon,size(testRadon,1),size(testRadon,2)*size(testRadon,3));
     [coeffr,scorer,latent,~,explained]=pca(testRadon2, 'Centered',false, 'NumComponents',NumPCA);
@@ -140,7 +142,7 @@ end
 %% plot PCA on Radon
 %plot the loading maps
 
-if plot_pca == 1 && PCA_radon == 1 
+if plot_pca == 1 && PCA_radon == 1
     figure;
     for n=1:NumPCA
         subplot(2,5,n);
@@ -151,7 +153,7 @@ if plot_pca == 1 && PCA_radon == 1
         subplot(2,5,n);
         imagesc(reshape(scorer(:,n),[Data_InputMap.ypts Data_InputMap.xpts])); axis image; axis ij; axis tight; axis off;
     end
-
+    
     figure;
     for n=1:NumPCA
         subplot(2,5,n);
@@ -172,20 +174,20 @@ pTime('Rotating Factors',t1);
 [coeffVM, RotVM] = rotatefactors(coeff(:,1:NumPCA),'Normalize','on','Method','varimax', 'Maxit', 5000, 'Reltol', 0.5*sqrt(eps));
 scoreVM=score(:,1:NumPCA)*RotVM;
 
-% sort the factor map 
+% sort the factor map
 PCA_VM_Pat_n=zeros(PatSizeW,PatSizeH,NumPCA);
-PCA_VM_Map_n=zeros([Data_InputMap.ypts Data_InputMap.xpts n]);
+PCA_VM_Map_n=zeros([Data_InputMap.ypts Data_InputMap.xpts NumPCA]);
 PCA_VM_num=zeros([Data_InputMap.ypts Data_InputMap.xpts]);
 PCA_VM_val=zeros([Data_InputMap.ypts Data_InputMap.xpts]);
 
 %sort the loadings
 for n=1:NumPCA
-   PCA_VM_Pat_n(:,:,n)=reshape(scoreVM(:,n),[PatSizeW,PatSizeH]);
-   Map_n=reshape(coeffVM(:,n),[Data_InputMap.ypts Data_InputMap.xpts]);
-   PCA_VM_Map_n(:,:,n)=Map_n;
-   
-   PCA_VM_num(abs(Map_n) > abs(PCA_VM_val)) = n;
-   PCA_VM_val(abs(Map_n) > abs(PCA_VM_val)) = Map_n(abs(Map_n) > abs(PCA_VM_val));
+    PCA_VM_Pat_n(:,:,n)=reshape(scoreVM(:,n),[PatSizeW,PatSizeH]);
+    Map_n=reshape(coeffVM(:,n),[Data_InputMap.ypts Data_InputMap.xpts]);
+    PCA_VM_Map_n(:,:,n)=Map_n;
+    
+    PCA_VM_num(abs(Map_n) > abs(PCA_VM_val)) = n;
+    PCA_VM_val(abs(Map_n) > abs(PCA_VM_val)) = Map_n(abs(Map_n) > abs(PCA_VM_val));
 end
 
 %flip the loadings if needed
@@ -201,21 +203,24 @@ end
 if plot_pca == 1
     figure;
     for n=1:NumPCA
-        subplot(PCAGrid(1)*2,PCAGrid(2),n);
+        subplot(PCAGrid(1),PCAGrid(2),n);
         imagesc(reshape(score(:,n),[PatSizeW,PatSizeH])); axis image; axis xy; axis tight; colormap('gray'); axis off; title(int2str(n));
     end
+    figure
     for n=1:NumPCA
-        subplot(PCAGrid(1)*2,PCAGrid(2),n+NumPCA);
+        subplot(PCAGrid(1),PCAGrid(2),n);
         imagesc(reshape(coeff(:,n),[Data_InputMap.ypts Data_InputMap.xpts])); axis image; axis ij; axis tight; axis off;title(int2str(n));
     end
     
     %plot these new factors
     figure;
     for n=1:NumPCA
-        subplot(PCAGrid(1)*2,PCAGrid(2),n);
+        subplot(PCAGrid(1),PCAGrid(2),n);
         imagesc(PCA_VM_Pat_n(:,:,n)); axis image; axis xy; axis tight; colormap('gray'); axis off; title(int2str(n));
-        
-        subplot(PCAGrid(1)*2,PCAGrid(2),n+NumPCA);
+    end
+    figure
+    for n=1:NumPCA
+        subplot(PCAGrid(1),PCAGrid(2),n);
         imagesc(PCA_VM_Map_n(:,:,n)); axis image; axis ij; axis tight; axis off;title(int2str(n));
     end
     
@@ -225,14 +230,7 @@ if plot_pca == 1
 end
 %% single point selection for pattern inspection
 %{
-[xi,yi]=ginput(1);
-xi=round(xi); yi=round(yi);
-hold on; scatter(xi,yi);
 
-pattern_number=Data_InputMap.PMap(yi,xi);
-[ RefPat ] = bReadEBSP(EBSPData,pattern_number);
-[ RefPat_cor] = EBSP_BGCor( RefPat,Settings_Cor );
-figure; imagesc(RefPat_cor);axis image; axis ij; axis tight; axis off;title(['X = ' int2str(n) ' Y = ' int2str(yi) ])
 %}
 
 %% save the data
