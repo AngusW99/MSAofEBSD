@@ -16,8 +16,15 @@ NumPCA=200; %number of factors to use
 
 PCA_radon=0; %do a PCA on the Radon
 
-plot_pca=1; %plot the PCA
+plot_pca=0; %plot the PCA
 PCAGrid=[6 6]; %grid for plotting (needs to add up, or be greater than NumPCA)
+
+%% EDX Settings
+
+EDX_pca=1; %run PCA for EDS data, 1 = yes
+channum=2048; %number of EDS channels
+NumPCAe=3; %number of factors to use for EDS
+PCAGride=[1 3];%grid for plotting (needs to add up, or be greater than NumPCA)
 
 %% AstroEBSD based background correction
 %background correction
@@ -56,10 +63,16 @@ LoadEBSP; %load the EBSP data - this may take a while..
 rPCA; %run the PCA analysis
 pPCA; %plot the PCA analysis
 
+%EDX scripts
+if EDX_pca == 1
+    LoadEDX; %load the EDX data
+    rPCAe; %run the EDS PCA
+    pPCAe; %plot the EDS PCA
+end
 %% save the data
 s=clock;
 save_file=fullfile(BaseFolder,HDF5_filename(1:end-3),[int2str(s(1)) '_' int2str(s(2)) '_' int2str(s(3)) '_' int2str(s(4)) int2str(s(5)) int2str(s(6)) '.mat']);
 if exist(fullfile(BaseFolder,HDF5_filename(1:end-3))) ~= 7
     mkdir(fullfile(BaseFolder,HDF5_filename(1:end-3)));
 end
-save(save_file);
+save(save_file,	'-v7.3');

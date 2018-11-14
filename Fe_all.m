@@ -14,11 +14,11 @@ t1=clock;
 
 
 % small ferritic steel sample - from Merlin- from DMC
-BaseFolder='G:\';
-HDF5_filename='Si_100x_50um.h5';
+BaseFolder='F:\Ben\';
+HDF5_filename='Demo_Ben.h5';
 
-NumPCA=8; %number of factors to use
-PCAGrid=[4 2]; %grid for plotting
+NumPCA=36; %number of factors to use
+PCAGrid=[6 6]; %grid for plotting
 
 PCA_radon=0; %do a PCA on the Radon
 plot_pca=1; %plot the PCA
@@ -51,15 +51,14 @@ cd(cur_folder);
 %% Read in the data
 pTime('Reading in h5 data',t1);
 % open HDF5 file and read in some data on EBSD map
-InputUser.Phase_Input  = {'Si'}; %Si, Ferrite
-
+InputUser.Phase_Input  = {'Ferrite'}; %Si, Ferrite
 InputUser.HDF5_folder=BaseFolder;
 InputUser.HDF5_file=HDF5_filename;
 [ MapData,MicroscopeData,PhaseData,EBSD_DataInfo ]=bReadHDF5( InputUser );
 %read the map & convert to area data
 [Data_InputMap_Start] = EBSD_Map(MapData,MicroscopeData);
 [ Data_InputMap ] = PC_square( EBSD_DataInfo, Data_InputMap_Start,Settings_Cor );
-BinFile='C:\Users\tbritton\Documents\GitHub\rTemplateMatch\masterpatterns\Si_1024.bin'; isHex=0;
+
 % this bit finds the extent of the cropped region of the SEM image that was actually mapped with EBSD
 % this is not used properly - will need some cropped map data to test/fix
 % the code for this!
@@ -247,7 +246,7 @@ end
 
 %% index the patterns
 
-
+BinFile='C:\Users\tbritton\Documents\GitHub\rTemplateMatch\masterpatterns\Ferrite_1024.bin'; isHex=0;
 [screen_int,facedata] = Cube_Generate(BinFile,isHex);
 
 %% Input variables

@@ -27,12 +27,12 @@ if plot_pca == 1
     f1=figure;
     imagesc(PCA_VM_num); axis image; colormap('colorcube');
 end
-
-if PCA_figures==1
-    for n=1:NumPCA
-    PCPat=PCA_VM_Pat_n(:,:,n);
-    PCPat=PCPat-min(min(PCPat));
-    PCPat=PCPat./max(PCPat(:));
-    imwrite(PCPat,'test1.tif');
-    end
-end
+% 
+% if PCA_figures==1
+%     for n=1:NumPCA
+%     PCPat=PCA_VM_Pat_n(:,:,n);
+%     PCPat=PCPat-min(min(PCPat));
+%     PCPat=PCPat./max(PCPat(:));
+%     imwrite(PCPat,'test1.tif');
+%     end
+% end
