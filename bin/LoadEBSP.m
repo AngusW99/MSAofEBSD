@@ -43,8 +43,8 @@ PatSizeW=size(RefPat_cor,1);
 PatSizeH=size(RefPat_cor,2);
 testArray=zeros(PatSizeW*PatSizeH,Data_InputMap.ypts,Data_InputMap.xpts);
 
-for xi=1:Data_InputMap.xpts  %MapSize1*MapSize2
-    parfor yi=1:Data_InputMap.ypts
+for yi=1:Data_InputMap.ypts
+    parfor xi=1:Data_InputMap.xpts  %MapSize1*MapSize2
         pattern_number=Data_InputMap.PMap(yi,xi);
         [ RefPat ] = bReadEBSP(EBSPData,pattern_number);
         [ RefPat_cor] = EBSP_BGCor( RefPat,Settings_Cor );
@@ -58,7 +58,7 @@ for xi=1:Data_InputMap.xpts  %MapSize1*MapSize2
             testRadon(:,yi,xi)=reshape(R_EBSPr,PatSizeT*PatSizeR,1);
         end
     end
-    pTime(['Completed row = ' int2str(xi)],t1);
+    pTime(['Completed row = ' int2str(yi)],t1);
 end
 
 %% Reshape the data for PCA

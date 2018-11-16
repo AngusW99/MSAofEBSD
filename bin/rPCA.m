@@ -18,10 +18,10 @@ scoreVM=score(:,1:NumPCA)*RotVM;
 %% Sort the factor loadings to make them positive
 
 % sort the factor map
-PCA_VM_Pat_n=zeros(PatSizeW,PatSizeH,NumPCA);
-PCA_VM_Map_n=zeros([Data_InputMap.ypts Data_InputMap.xpts NumPCA]);
-PCA_VM_num=zeros([Data_InputMap.ypts Data_InputMap.xpts]);
-PCA_VM_val=zeros([Data_InputMap.ypts Data_InputMap.xpts]);
+PCA_VM_Pat_n=zeros(PatSizeW,PatSizeH,NumPCA); %pattern
+PCA_VM_Map_n=zeros([Data_InputMap.ypts Data_InputMap.xpts NumPCA]); %load maps
+PCA_VM_num=zeros([Data_InputMap.ypts Data_InputMap.xpts]); 
+PCA_VM_val=zeros([Data_InputMap.ypts Data_InputMap.xpts]); %pattern to use
 
 %sort the loadings
 for n=1:NumPCA
